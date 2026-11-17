@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'jobs/site.css' %}">
+    <title>My jobs | Job Portal</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="{% url 'job_list' %}">Job Portal</a>
+      <nav class="header-actions" aria-label="Main navigation">
+        <a class="button" href="{% url 'job_create' %}">Post a job</a>
+        <a class="button button-secondary" href="{% url 'my_applications' %}">My applications</a>
+      </nav>
+    </header>
+    <main class="page-shell">
+      <div class="page-heading">
+        <p class="eyebrow">Employer dashboard</p>
+        <h1>My job listings</h1>
+        <p>Manage the roles you have posted and keep your opportunities up to date.</p>
+      </div>
+      <section class="item-list" aria-label="Your job listings">
+        {% for job in jobs %}
+          <article class="item-card">
+            <div>
+              <h2><a href="{% url 'job_detail' job.pk %}">{{ job.title }}</a></h2>
+              <div class="item-meta">
+                <span>{{ job.company_name }}</span>
+                <span>{{ job.location }}</span>
+                <span>Salary: {{ job.salary }}</span>
+              </div>
+              <span class="date-badge">Posted {{ job.date_posted }}</span>
+            </div>
+            <div class="card-actions item-actions">
+              <a class="button button-secondary" href="{% url 'job_update' job.pk %}">Edit</a>
+              <a class="button button-danger" href="{% url 'job_delete' job.pk %}">Delete</a>
+            </div>
+          </article>
+        {% empty %}
+          <div class="empty-state">
+            <p>You have not posted any jobs yet.</p>
+            <a class="button" href="{% url 'job_create' %}">Post your first job</a>
+          </div>
+        {% endfor %}
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'jobs/site.css' %}">
+    <title>My applications | Job Portal</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="{% url 'job_list' %}">Job Portal</a>
+      <nav class="header-actions" aria-label="Main navigation">
+        <a class="button button-secondary" href="{% url 'my_jobs' %}">My jobs</a>
+        <a class="button button-secondary" href="{% url 'job_list' %}">Browse jobs</a>
+      </nav>
+    </header>
+    <main class="page-shell">
+      <div class="page-heading">
+        <p class="eyebrow">Your activity</p>
+        <h1>My applications</h1>
+        <p>Review the positions you have applied for and revisit their details.</p>
+      </div>
+      <section class="item-list" aria-label="Your job applications">
+        {% for application in applications %}
+          <article class="item-card">
+            <div>
+              <h2>
+                <a href="{% url 'job_detail' application.job.pk %}">
+                  {{ application.job.title }}
+                </a>
+              </h2>
+              <div class="item-meta">
+                <span>{{ application.job.company_name }}</span>
+                <span>{{ application.job.location }}</span>
+              </div>
+              <span class="date-badge">Applied {{ application.date_applied }}</span>
+            </div>
+            <div class="card-actions item-actions">
+              <a class="button button-secondary" href="{% url 'job_detail' application.job.pk %}">
+                View job
+              </a>
+            </div>
+          </article>
+        {% empty %}
+          <div class="empty-state">
+            <p>You have not applied to any jobs yet.</p>
+            <a class="button" href="{% url 'job_list' %}">Browse available jobs</a>
+          </div>
+        {% endfor %}
+      </section>
+    </main>
+  </body>
+</html>

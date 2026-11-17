@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'jobs/site.css' %}">
+    <title>Sign in | Job Portal</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="{% url 'job_list' %}">Job Portal</a>
+      <nav class="header-actions" aria-label="Account navigation">
+        <a class="button button-secondary" href="{% url 'job_list' %}">Browse jobs</a>
+        <a class="button" href="{% url 'signup' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Sign up</a>
+      </nav>
+    </header>
+    <main class="auth-shell">
+      <section class="auth-card">
+        <p class="eyebrow">Welcome back</p>
+        <h1>Sign in to your account</h1>
+        <p class="auth-intro">Continue your job search or manage your job listings.</p>
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+          {% endif %}
+          <div class="card-actions">
+            <button class="button" type="submit">Sign in</button>
+          </div>
+        </form>
+        <p class="auth-footer">
+          New to Job Portal?
+          <a href="{% url 'signup' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Create an account</a>
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

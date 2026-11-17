@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'jobs/site.css' %}">
+    <title>{% if object %}Edit job{% else %}Post a job{% endif %} | Job Portal</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="{% url 'job_list' %}">Job Portal</a>
+      <nav class="header-actions" aria-label="Main navigation">
+        <a class="button button-secondary" href="{% url 'my_jobs' %}">My jobs</a>
+        <a class="button button-secondary" href="{% url 'my_applications' %}">My applications</a>
+      </nav>
+    </header>
+    <main class="page-shell">
+      <div class="page-heading">
+        <p class="eyebrow">Employer dashboard</p>
+        <h1>{% if object %}Edit your job{% else %}Post a new job{% endif %}</h1>
+        <p>Share the role details so candidates know what makes this opportunity a good fit.</p>
+      </div>
+      <section class="panel form-panel">
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <div class="card-actions">
+            <button class="button" type="submit">
+              {% if object %}Save changes{% else %}Publish job{% endif %}
+            </button>
+            <a class="button button-secondary" href="{% url 'my_jobs' %}">Cancel</a>
+          </div>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

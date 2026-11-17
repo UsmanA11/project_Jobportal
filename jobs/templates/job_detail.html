@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'jobs/site.css' %}">
+    <title>{{ job.title }} | Job Portal</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="{% url 'job_list' %}">Job Portal</a>
+      <nav class="header-actions" aria-label="Main navigation">
+        {% if user.is_authenticated %}
+          <a class="button button-secondary" href="{% url 'job_list' %}">All jobs</a>
+          {% if user.role == 'employer' %}
+            <a class="button button-secondary" href="{% url 'my_jobs' %}">My jobs</a>
+          {% else %}
+            <a class="button button-secondary" href="{% url 'my_applications' %}">My applications</a>
+          {% endif %}
+          <form action="{% url 'switch_role' %}" method="post" class="role-switch-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button class="button button-secondary" type="submit">
+              Switch to {% if user.role == 'employer' %}Job Seeker{% else %}Employer{% endif %}
+            </button>
+          </form>
+          {% if user == job.posted_by and user.role == 'employer' %}
+            <a class="button" href="{% url 'job_update' job.pk %}">Edit job</a>
+          {% endif %}
+        {% else %}
+          <a class="button" href="{% url 'job_create' %}">Post a job</a>
+          <a class="button button-secondary" href="{% url 'login' %}?next={{ request.path }}">Log in</a>
+          <a class="button" href="{% url 'signup' %}?next={{ request.path|urlencode }}">Sign up</a>
+        {% endif %}
+      </nav>
+    </header>
+    <main class="page-shell">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="flash-message" role="status">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+      <p class="breadcrumb"><a href="{% url 'job_list' %}">All jobs</a> / Job details</p>
+      <div class="page-heading">
+        <p class="eyebrow">Job opportunity</p>
+        <h1>{{ job.title }}</h1>
+        <p>{{ job.company_name }} · {{ job.location }}</p>
+      </div>
+      <div class="detail-layout">
+        <section class="panel detail-main">
+          <div class="job-facts">
+            <div class="fact-card">
+              <span class="fact-label">Company</span>
+              <span class="fact-value">{{ job.company_name }}</span>
+            </div>
+            <div class="fact-card">
+              <span class="fact-label">Location</span>
+              <span class="fact-value">{{ job.location }}</span>
+            </div>
+            <div class="fact-card">
+              <span class="fact-label">Salary</span>
+              <span class="fact-value">{{ job.salary }}</span>
+            </div>
+          </div>
+          <h2>About this role</h2>
+          <div class="description-copy">{{ job.description|linebreaksbr }}</div>
+          <span class="date-badge">Posted {{ job.date_posted }}</span>
+        </section>
+        <aside class="panel apply-panel">
+          <h2>Interested in this role?</h2>
+          {% if user.is_authenticated %}
+            {% if user.role == 'employer' %}
+              <p>Only job seekers can apply. Switch your account role to continue.</p>
+              <form action="{% url 'switch_role' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button class="button" type="submit">Switch to Job Seeker</button>
+              </form>
+            {% elif already_applied %}
+              <p class="applied-notice">You have already applied to this job.</p>
+            {% else %}
+              <p>Submit your application to be considered for this opportunity.</p>
+              <form method="post" action="{% url 'apply_to_job' job.pk %}">
+                {% csrf_token %}
+                <button class="button" type="submit">Apply now</button>
+              </form>
+            {% endif %}
+            {% if user == job.posted_by and user.role == 'employer' %}
+              <div class="detail-actions">
+                <a class="button button-secondary" href="{% url 'job_update' job.pk %}">Edit job</a>
+                <a class="button button-danger" href="{% url 'job_delete' job.pk %}">Delete job</a>
+              </div>
+            {% endif %}
+          {% else %}
+            <p>Sign in or create an account to apply for this job.</p>
+            <div class="detail-actions">
+              <a class="button" href="{% url 'login' %}?next={{ request.path }}">Log in to apply</a>
+              <a class="button button-secondary" href="{% url 'signup' %}?next={{ request.path|urlencode }}">Create account</a>
+            </div>
+          {% endif %}
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>
